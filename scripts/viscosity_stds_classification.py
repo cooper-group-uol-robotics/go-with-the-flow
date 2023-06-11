@@ -1,10 +1,10 @@
 import numpy as np
 from torch import cuda, device, manual_seed
 
-from ..models.models import CNN3DVisco
-from ..data.loader import create_cls_datasets
-from ..training.train import train, test_model
-from ..utils.visualise import visualise_loss_early_stop, visualise_confusion_matrix
+from go_with_the_flow.models.models import CNN3DVisco
+from go_with_the_flow.data.loader import create_cls_datasets
+from go_with_the_flow.training.train import train, test_model
+from go_with_the_flow.utils.visualise import visualise_loss_early_stop, visualise_confusion_matrix
 
 if __name__ == "__main__":
 
