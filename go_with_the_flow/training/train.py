@@ -11,23 +11,29 @@ from pytorchtools import EarlyStopping
 from ..models.models import CNN3DVisco
 
 
-def train(model: CNN3DVisco, train_loader: DataLoader, valid_loader: DataLoader, batch_size: int,
-          learning_rate: float, patience: int, epochs: int,
-          save_model_path: str, device: torch.device) -> Tuple[CNN3DVisco,
-                                                               List[float],
-                                                               List[float]]:
+def train(
+    model: CNN3DVisco,
+    train_loader: DataLoader,
+    valid_loader: DataLoader,
+    batch_size: int,
+    learning_rate: float,
+    patience: int,
+    epochs: int,
+    save_model_path: str,
+    device: torch.device
+) -> Tuple[CNN3DVisco, List[float], List[float]]:
     """ Train the model using the given input parameters using Adam optimiser and cross
     entropy loss function
 
     Args:
-    model: CNN3DVisco model to be trained
-    train_loader: training data loader
-    valid_loader: validation data loader
-    batch_size: training batch size
-    learning_rate: training learning rate
-    patience: training patience
-    epochs: max training epochs
-    save_model_path: path to save training outputs
+        model: CNN3DVisco model to be trained
+        train_loader: training data loader
+        valid_loader: validation data loader
+        batch_size: training batch size
+        learning_rate: training learning rate
+        patience: training patience
+        epochs: max training epochs
+        save_model_path: path to save training outputs
     """
 
     criterion = nn.CrossEntropyLoss()
@@ -77,9 +83,11 @@ def train(model: CNN3DVisco, train_loader: DataLoader, valid_loader: DataLoader,
 
         epoch_len = len(str(epochs))
 
-        print_msg = (f'[{epoch:>{epoch_len}}/{epochs:>{epoch_len}}] ' +
-                     f'train_loss: {train_loss:.5f} ' +
-                     f'valid_loss: {valid_loss:.5f}')
+        print_msg = (
+            f'[{epoch:>{epoch_len}}/{epochs:>{epoch_len}}] ' +
+            f'train_loss: {train_loss:.5f} ' +
+            f'valid_loss: {valid_loss:.5f}'
+        )
 
         print(print_msg)
 
@@ -99,26 +107,40 @@ def train(model: CNN3DVisco, train_loader: DataLoader, valid_loader: DataLoader,
     print(summation)
 
     # save spatial_encoder
-    torch.save(model.state_dict(), os.path.join(save_model_path, 'lr_'+str(learning_rate)+'batch_' +
-                                                str(batch_size)+f'3dcnn_epoch{summation}.pth'))
+    torch.save(
+        model.state_dict(),
+        os.path.join(
+            save_model_path,
+            'lr_' + str(learning_rate) + 'batch_' + str(batch_size) + f'3dcnn_epoch{summation}.pth'
+        )
+    )
     # save optimizer
-    torch.save(optimizer.state_dict(), os.path.join(save_model_path, str(batch_size) +
-                                                    f'3dcnn_optimizer_epoch{(summation)}.pth'))
+    torch.save(
+        optimizer.state_dict(),
+        os.path.join(
+            save_model_path,
+            str(batch_size) + f'3dcnn_optimizer_epoch{(summation)}.pth'
+        )
+    )
     print(f"Epoch {summation} model saved!")
 
     return model, avg_train_losses, avg_valid_losses
 
 
-def test_model(model: CNN3DVisco, test_loader: DataLoader, batch_size: int,
-               num_classes: int) -> Tuple[float, List[float], List[float]]:
-    """ Test the given model using test dataset and return overall accuracy in addition to
+def test_model(
+    model: CNN3DVisco,
+    test_loader: DataLoader,
+    batch_size: int,
+    num_classes: int
+) -> Tuple[float, List[float], List[float]]:
+    """ Test the given model using the test dataset and return overall accuracy in addition to
     the true and predicted values
 
     Args:
-    model: CNN3DVisco model to be trained
-    test_loader: test data loader
-    batch_size: training batch size
-    num_classes: number of classification labels
+        model: CNN3DVisco model to be trained
+        test_loader: test data loader
+        batch_size: training batch size
+        num_classes: number of classification labels
     """
 
     # initialize lists to monitor test loss and accuracy
@@ -152,7 +174,7 @@ def test_model(model: CNN3DVisco, test_loader: DataLoader, batch_size: int,
 
         print('pred', pred)
 
-        # compare predictions to true label
+        # compare predictions to the true label
         correct = np.squeeze(pred.eq(target1.data.view_as(pred)))
 
         # calculate test accuracy for each object class
@@ -171,19 +193,28 @@ def test_model(model: CNN3DVisco, test_loader: DataLoader, batch_size: int,
     print('true values', true_values)
     print('pred values', predicted_values)
 
-    # calculate and print avg test loss
+    # calculate and print the avg test loss
     test_loss = test_loss/len(test_loader.dataset)
     print(f'Test Loss: {test_loss:.6f}\n')
 
     for i in range(num_classes):
         if class_total[i] > 0:
-            print('Test Accuracy of %5s: %2d%% (%2d/%2d)' % (
-                str(i), 100 * class_correct[i] / class_total[i],
-                np.sum(class_correct[i]), np.sum(class_total[i])))
+            print(
+                'Test Accuracy of %5s: %2d%% (%2d/%2d)' % (
+                    str(i),
+                    100 * class_correct[i] / class_total[i],
+                    np.sum(class_correct[i]),
+                    np.sum(class_total[i])
+                )
+            )
 
-    print('\nTest Accuracy (Overall): %2d%% (%2d/%2d)' % (
-        100. * np.sum(class_correct) / np.sum(class_total),
-        np.sum(class_correct), np.sum(class_total)))
+    print(
+        '\nTest Accuracy (Overall): %2d%% (%2d/%2d)' % (
+            100. * np.sum(class_correct) / np.sum(class_total),
+            np.sum(class_correct),
+            np.sum(class_total)
+        )
+    )
 
     overall_accuracy = 100 * np.sum(class_correct) / np.sum(class_total)
     print('overall accuracy = ', overall_accuracy)
