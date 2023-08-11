@@ -1,13 +1,13 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import torch
 from torch import cuda, device, manual_seed
-
 from go_with_the_flow.models.models import CNN3DVisco
 from go_with_the_flow.data.loader import create_cls_datasets
 from go_with_the_flow.training.train import train, test_model
 from go_with_the_flow.utils.visualise import visualise_loss_early_stop, visualise_confusion_matrix
 
 if __name__ == "__main__":
-
     # use CPU for running
     use_cuda = cuda.is_available()
     dev = device("cuda" if use_cuda else "cpu")
@@ -32,14 +32,14 @@ if __name__ == "__main__":
     model = CNN3DVisco(t_dim=29, img_x=img_x, img_y=img_y, num_classes=len(class_labels))
 
     # load datasets
-    train_loader, test_loader, valid_loader = create_cls_datasets(batch_size, data_path,
-                                                                  class_labels, selected_frames,
-                                                                  img_x, img_y)
+    train_loader, test_loader, valid_loader = create_cls_datasets(
+        batch_size, data_path, class_labels, selected_frames, img_x, img_y
+    )
 
     # train model
-    model, train_loss, valid_loss = train(model, train_loader, valid_loader, batch_size,
-                                          learning_rate, patience, epochs, target_save_path,
-                                          dev)
+    model, train_loss, valid_loss = train(
+        model, train_loader, valid_loader, batch_size, learning_rate, patience, epochs, target_save_path, dev
+    )
 
     # visualise training loss
     fig_save_path = "./figs"
@@ -54,5 +54,6 @@ if __name__ == "__main__":
     x_label = "Predicted Viscosity Category"
     y_label = "Actual Viscosity Category"
     conf_mat_filename = "conf_mat"
-    visualise_confusion_matrix(predicted_values, true_values, plt_title, x_label, y_label,
-                               class_labels, fig_save_path, conf_mat_filename)
+    visualise_confusion_matrix(
+        predicted_values, true_values, plt_title, x_label, y_label, class_labels, fig_save_path, conf_mat_filename
+    )
